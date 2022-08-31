@@ -1,0 +1,431 @@
+function setX(x,y) //Checks if square can be played in, and if so plays there. Else outputs error
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  if(ss.getRange(2,9).getValue() == 1)
+  {
+    writeToInfo("Current Game Over!\n\nPlease Select \"New Game\" to Start Again!");
+  }
+  else
+  {
+    if(ss.getRange(1,9).getValue() == 9)
+    {
+      writeToInfo("Tie Game!\n\nPlease Select \"New Game\" to Start Again!")
+      ss.getRange(2,9).setValue(1);//Locks the game
+    }
+    else
+    {
+      var sRange = ss.getRange(x,y);
+      if(sRange.getValue() != "O" && sRange.getValue() != "X")
+      {
+        sRange.setValue("X"); 
+        ss.getRange(1,9).setValue(ss.getRange(1,9).getValue()+1);
+
+        if(ss.getRange(1,9).getValue() == 9)
+        {
+          writeToInfo("Tie Game!\n\nPlease Select \"New Game\" to Start Again!")
+          ss.getRange(2,9).setValue(1);//Locks the game
+        }
+        if(checkForWinner() != 1)
+        {
+          computerPlays();
+        }
+      }
+      else
+      {
+        writeToInfo("Cannot Play there! \n Try again!");
+      }
+    }
+  }
+}
+
+function setO(x,y) //Checks if square can be played in, and if so plays there. Else outputs error
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  if(ss.getRange(2,9).getValue() == 1)
+  {
+    writeToInfo("Current Game Over!\n\nPlease Select \"New Game\" to Start Again!");
+    return true;
+  }
+  else
+  {
+    if(ss.getRange(1,9).getValue() == 9)
+    {
+      writeToInfo("Tie Game!\n\nPlease Select \"New Game\" to Start Again!")
+      ss.getRange(2,9).setValue(1);//Locks the game
+      return true;
+    }
+    else
+    {
+      var sRange = ss.getRange(x,y);
+      if(sRange.getValue() != "O" && sRange.getValue() != "X")
+      {
+        sRange.setValue("O"); 
+        ss.getRange(1,9).setValue(ss.getRange(1,9).getValue()+1);
+
+        if(ss.getRange(1,9).getValue() == 9)
+        {
+          writeToInfo("Tie Game!\n\nPlease Select \"New Game\" to Start Again!")
+          ss.getRange(2,9).setValue(1);//Locks the game
+        }
+        if(checkForWinner() != 1)
+        {
+          return true;
+        }
+        else
+        {
+          return true;
+        }
+      }
+      else
+      {
+        computerPlays();
+      }
+    }
+  }
+}
+
+function writeToInfo(textToWrite)
+{
+  clearInfo();
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  ss.getRange(21,2).setValue(textToWrite);
+}
+
+function clearBoard()
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  ss.getRange(5,4,9,3).clearContent();
+  ss.getRange(1,9).setValue(0);//Tracks Number Of Moves Played
+  ss.getRange(2,9).setValue(0);//Resets the game lock.
+}
+
+function newGame()
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  clearInfo();
+  clearBoard();
+  writeToInfo("Welcome to Tic-Tac-Toe!");
+  var ui = SpreadsheetApp.getUi();
+  var userInput = ui.alert('Welcome To Tic-Tac-Toe!', 'Would you like to go first?', ui.ButtonSet.YES_NO);
+  if (userInput == ui.Button.YES)
+  {
+  }
+  else if (userInput == ui.Button.NO)
+  {
+    computerPlays()
+  }
+  else
+  {
+    writeToInfo("You closed the page without answering\n\nSelect \"New Game\" to begin playing!");
+    ss.getRange(2,9).setValue(1);//Locks the game
+  }
+}
+
+function computerPlays()
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  if(ss.getRange(1,9).getValue() == 0)
+  {
+    setO(9,5);
+  }
+  else
+  {
+    var computerPlayed = false;
+
+    if(computerPlayed == false);
+    {
+      var randomComputer = Math.floor(Math.random() * 9) + 1;
+      switch(randomComputer)
+      {
+        case 1:
+        computerPlayed = setO(5,4);
+        break;
+
+        case 2:
+        computerPlayed = setO(5,5);
+        break;
+
+        case 3:
+        computerPlayed = setO(5,6);
+        break;
+
+        case 4:
+        computerPlayed = setO(9,4);
+        break;
+
+        case 5:
+        computerPlayed = setO(9,5);
+        break;
+
+        case 6:
+        computerPlayed = setO(9,6);
+        break;
+
+        case 7:
+        computerPlayed = setO(13,4);
+        break;
+
+        case 8:
+        computerPlayed = setO(13,5);
+        break;
+
+        case 9:
+        computerPlayed = setO(13,6);
+        break;
+
+        default:
+        writeToInfo("Your switch statement broke")
+        computerPlayed = true;
+          break;
+      }
+    }
+  }
+}
+
+function xWins()
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  writeToInfo("X Wins!\n\nSelect \"New Game\" to play again!");
+  ss.getRange(2,9).setValue(1);//Locks the game
+}
+
+function oWins()
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  writeToInfo("O Wins!\n\nSelect \"New Game\" to play again!");
+  ss.getRange(2,9).setValue(1);//Locks the game
+}
+
+function checkForWinner() //Written so it doesn't need to loop the entire thing if it finds a winning column.
+{
+  if(winLeft() == 0){return 1;}
+  else if(winMiddleV() == 0){return 1;}
+  else if(winRight() == 0){return 1;}
+  else if(winTop() == 0){return 1;}
+  else if(winMiddleH() == 0){return 1;}
+  else if(winBottom() == 0){return 1;}
+  else if(winDiagL() == 0){return 1;}
+  else if(winDiagR() == 0){return 1;}
+  else
+  {
+    return 0;
+  }
+}
+
+//Win Functions
+
+  function winLeft()
+  {
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+    if(ss.getRange(5,4).getValue() == "X" && ss.getRange(9,4).getValue() == "X" && ss.getRange(13,4).getValue() == "X")
+    {
+      xWins();
+      return 0;
+    }
+    else if(ss.getRange(5,4).getValue() == "O" && ss.getRange(9,4).getValue() == "O" && ss.getRange(13,4).getValue() == "O")
+    {
+      oWins();
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+
+  function winMiddleV()
+  {
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+    if(ss.getRange(5,5).getValue() == "X" && ss.getRange(9,5).getValue() == "X" && ss.getRange(13,5).getValue() == "X")
+    {
+      xWins();
+      return 0;
+    }
+    else if(ss.getRange(5,5).getValue() == "O" && ss.getRange(9,5).getValue() == "O" && ss.getRange(13,5).getValue() == "O")
+    {
+      oWins();
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+
+  function winRight()
+  {
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+    if(ss.getRange(5,6).getValue() == "X" && ss.getRange(9,6).getValue() == "X" && ss.getRange(13,6).getValue() == "X")
+    {
+      xWins();
+      return 0;
+    }
+    else if(ss.getRange(5,6).getValue() == "O" && ss.getRange(9,6).getValue() == "O" && ss.getRange(13,6).getValue() == "O")
+    {
+      oWins();
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+
+  function winTop()
+  {
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+    if(ss.getRange(5,4).getValue() == "X" && ss.getRange(5,5).getValue() == "X" && ss.getRange(5,6).getValue() == "X")
+    {
+      xWins();
+      return 0;
+    }
+    else if(ss.getRange(5,4).getValue() == "O" && ss.getRange(5,5).getValue() == "O" && ss.getRange(5,6).getValue() == "O")
+    {
+      oWins();
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+
+  function winMiddleH()
+  {
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+    if(ss.getRange(9,4).getValue() == "X" && ss.getRange(9,5).getValue() == "X" && ss.getRange(9,6).getValue() == "X")
+    {
+      xWins();
+      return 0;
+    }
+    else if(ss.getRange(9,4).getValue() == "O" && ss.getRange(9,5).getValue() == "O" && ss.getRange(9,6).getValue() == "O")
+    {
+      oWins();
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+
+  function winBottom()
+  {
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+    if(ss.getRange(13,4).getValue() == "X" && ss.getRange(13,5).getValue() == "X" && ss.getRange(13,6).getValue() == "X")
+    {
+      xWins();
+      return 0;
+    }
+    else if(ss.getRange(13,4).getValue() == "O" && ss.getRange(13,5).getValue() == "O" && ss.getRange(13,6).getValue() == "O")
+    {
+      oWins();
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+
+  function winDiagR()
+  {
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+    if(ss.getRange(5,6).getValue() == "X" && ss.getRange(9,5).getValue() == "X" && ss.getRange(13,4).getValue() == "X")
+    {
+      xWins();
+      return 0;
+    }
+    else if(ss.getRange(5,6).getValue() == "O" && ss.getRange(9,5).getValue() == "O" && ss.getRange(13,4).getValue() == "O")
+    {
+      oWins();
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+
+  function winDiagL()
+  {
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+    if(ss.getRange(5,4).getValue() == "X" && ss.getRange(9,5).getValue() == "X" && ss.getRange(13,6).getValue() == "X")
+    {
+      xWins();
+      return 0;
+    }
+    else if(ss.getRange(5,4).getValue() == "O" && ss.getRange(9,5).getValue() == "O" && ss.getRange(13,6).getValue() == "O")
+    {
+      oWins();
+      return 0;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+
+
+
+
+function exit()
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  clearInfo();
+  clearBoard();
+  writeToInfo("Thanks for playing! See you next time!\n\nClose the browser to leave the game");
+  ss.getRange(2,9).setValue(1);//Locks the game
+}
+
+function clearInfo() //Clears the Game Info Tab
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Game");
+  ss.getRange(21,2).clearContent();
+}
+
+//Player Placement Functions
+  function topLeft()
+  {
+    setX(5,4);
+  }
+
+  function topMiddle()
+  {
+    setX(5,5);
+  }
+
+  function topRight()
+  {
+    setX(5,6);
+  }
+
+  function middleLeft()
+  {
+    setX(9,4);
+  }
+
+  function center()
+  {
+    setX(9,5);
+  }
+
+  function middleRight()
+  {
+    setX(9,6);
+  }
+
+  function bottomLeft()
+  {
+    setX(13,4);
+  }
+
+  function bottomMiddle()
+  {
+    setX(13,5);
+  }
+
+  function bottomRight()
+  {
+    setX(13,6);
+  }
