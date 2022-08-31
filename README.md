@@ -1,5 +1,6 @@
 # Work-Challenge
-Tic-Tac-Toe Work Challenge
+Tic-Tac-Toe Work Challenge.
+
 I choose to write this challenge in JavaScript, specifically using Google App Script, linked to a GoogleSpreadsheet.
 Here is the link for the spreadsheet, it is public so you should be able to access it.
 https://docs.google.com/spreadsheets/d/1BIlozFm9t0rnpMN6sWOBpPOYEjx2_gSvXQIBLf22AZo/edit?usp=sharing
